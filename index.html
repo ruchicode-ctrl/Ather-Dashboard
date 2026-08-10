@@ -196,24 +196,36 @@
     const NEWS_DESK_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQqBuCJPUe7GR8mtAYRrj9u6071aYdZ0PuRs-Ui2xR8nOjUIv6gwTNqCf2lR0OXi_0vf5p5EvZt0jNT/pub?gid=1553817120&single=true&output=csv';
 
     // Fetch Live Ticker Data
+    <script>
+    // YOUR PUBLISHED GOOGLE SHEET CSV LINKS
+    const LIVE_DATA_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQqBuCJPUe7GR8mtAYRrj9u6O71aYdZ0PuRs-Ui2xR8nOjUlv6gwTNqCf2lR0OXi_0vf5p5EvZt0JNT/pub?gid=0&single=true&output=csv';
+    const NEWS_DESK_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQqBuCJPUe7GR8mtAYRrj9u6O71aYdZ0PuRs-Ui2xR8nOjUlv6gwTNqCf2lR0OXi_0vf5p5EvZt0JNT/pub?gid=1553817120&single=true&output=csv';
+
+    // Fetch Live Ticker Data
     Papa.parse(LIVE_DATA_CSV_URL, {
       download: true,
       header: true,
+      skipEmptyLines: true,
       complete: function(results) {
+        console.log("Live Data Results:", results);
         const container = document.getElementById('ticker-container');
-        container.innerHTML = '';
-        
-        results.data.forEach(row => {
-          if (row.Metric && row.Value) {
-            const card = document.createElement('div');
-            card.className = 'ticker-card';
-            card.innerHTML = `
-              <div class="ticker-label">${row.Metric}</div>
-              <div class="ticker-value">${row.Value}</div>
-            `;
-            container.appendChild(card);
-          }
-        });
+        if (results.data && results.data.length > 0) {
+          container.innerHTML = '';
+          results.data.forEach(row => {
+            if (row.Metric && row.Value) {
+              const card = document.createElement('div');
+              card.className = 'ticker-card';
+              card.innerHTML = `
+                <div class="ticker-label">${row.Metric}</div>
+                <div class="ticker-value">${row.Value}</div>
+              `;
+              container.appendChild(card);
+            }
+          });
+        }
+      },
+      error: function(err) {
+        console.error("Ticker Error:", err);
       }
     });
 
@@ -221,28 +233,34 @@
     Papa.parse(NEWS_DESK_CSV_URL, {
       download: true,
       header: true,
+      skipEmptyLines: true,
       complete: function(results) {
+        console.log("News Desk Results:", results);
         const container = document.getElementById('sources-container');
-        container.innerHTML = '';
-        
-        results.data.forEach(row => {
-          if (row.Source_Name && row.Website_URL) {
-            const card = document.createElement('div');
-            card.className = 'source-card';
-            card.innerHTML = `
-              <div>
-                <span class="badge">${row.Category || 'General'}</span>
-                <h3 class="source-name">${row.Source_Name}</h3>
-                <p class="source-desc">${row.Description || ''}</p>
-              </div>
-              <div class="card-footer">
-                <span class="source-date">Verified: ${row.Source_Date || 'N/A'}</span>
-                <a class="source-link" href="${row.Website_URL}" target="_blank" rel="noopener">Open Portal &rarr;</a>
-              </div>
-            `;
-            container.appendChild(card);
-          }
-        });
+        if (results.data && results.data.length > 0) {
+          container.innerHTML = '';
+          results.data.forEach(row => {
+            if (row.Source_Name && row.Website_URL) {
+              const card = document.createElement('div');
+              card.className = 'source-card';
+              card.innerHTML = `
+                <div>
+                  <span class="badge">${row.Category || 'General'}</span>
+                  <h3 class="source-name">${row.Source_Name}</h3>
+                  <p class="source-desc">${row.Description || ''}</p>
+                </div>
+                <div class="card-footer">
+                  <span class="source-date">Verified: ${row.Source_Date || 'N/A'}</span>
+                  <a class="source-link" href="${row.Website_URL}" target="_blank" rel="noopener">Open Portal &rarr;</a>
+                </div>
+              `;
+              container.appendChild(card);
+            }
+          });
+        }
+      },
+      error: function(err) {
+        console.error("Sources Error:", err);
       }
     });
   </script>
